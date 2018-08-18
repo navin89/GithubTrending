@@ -1,0 +1,11 @@
+package com.navin.cache.model
+
+import android.arch.persistence.room.Entity
+import android.arch.persistence.room.PrimaryKey
+import com.navin.cache.db.ConfigConstants
+
+@Entity(tableName = ConfigConstants.TABLE_NAME)
+class Config(
+        @PrimaryKey(autoGenerate = true)
+        var id: Int = -1,
+        var lastCachedTime: Long)
