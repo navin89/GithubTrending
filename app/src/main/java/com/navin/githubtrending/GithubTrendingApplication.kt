@@ -1,35 +1,43 @@
 package com.navin.githubtrending
 
+import android.app.Activity
+import android.app.Application
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import com.navin.githubtrending.injection.DaggerApplicationComponent
+import dagger.android.AndroidInjector
+import dagger.android.DaggerApplication
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasActivityInjector
 
 import kotlinx.android.synthetic.main.activity_browse.*
+import timber.log.Timber
+import javax.inject.Inject
 
-class GithubTrendingApplication : AppCompatActivity() {
+class GithubTrendingApplication : Application(), HasActivityInjector {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_browse)
+    @Inject lateinit var androidInjector: DispatchingAndroidInjector<Activity>
+
+    override fun activityInjector(): AndroidInjector<Activity> {
+        return androidInjector
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        setupTimber()
+
+        DaggerApplicationComponent
+                .builder()
+                .application(this)
+                .build()
+                .inject(this)
 
     }
 
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
-        }
+    private fun setupTimber() {
+        Timber.plant(Timber.DebugTree())
     }
 }
